@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>MQTT Client</title>
+  <script defer src="./main.fde58d025917b784e3bd.js"></script><link href="./css/main.fde58d025917b784e3bd.css" rel="stylesheet"></head>
+  <body>    
+    <div class="input-zone">
+      <label id="lblHost" for="tbHost">Host:</label>
+      <input id="tbHost" class="input-zone-input" type="text" />
+      <label id="lblUser" for="tbUser">User:</label>
+      <input id="tbUser" class="input-zone-input" type="text" />
+      <label id="lblPassword" for="tbPassword">Password:</label>
+      <input id="tbPassword" class="input-zone-input" type="password" />
+      <button id="btnConnect">Connect</button>
+    </div>
+    <div class="input-zone">
+      <label id="lblMessage" for="tbMessage">Message:</label>
+      <input id="tbMessage" class="input-zone-input" type="text" />
+      <button id="btnSend">Send</button>
+    </div>
+    <div id="divMessages" class="messages"></div>
+  </body>
+</html>
