@@ -46,8 +46,7 @@ class main {
       userName: this.inp("user").value,
       password: this.inp("password").value,
       onSuccess: (ctx: Paho.WithInvocationContext) => {
-        this.updateStatus(State.Connected);
-        this.client.subscribe(this.inp("sub").value);        
+        this.updateStatus(State.Connected);        
       },
       onFailure: (err: Paho.ErrorWithInvocationContext) => {
         console.log("onFailure", err);
@@ -59,7 +58,8 @@ class main {
   private disconnect() {
     this.updateStatus(State.Disconnecting);   
     this.unsubscribeAll();
-    this.client.disconnect();   
+    this.client.disconnect();  
+    this.div("messages").innerHTML =""; 
   }
 
   private reset() {
@@ -120,8 +120,10 @@ class main {
   }
 
   private messageArrived(message: Paho.Message) {
-    console.log("onMessageArrived:", message);    
-    this.div("messages").innerHTML += message.destinationName + ": " + message.payloadString + '<br>';
+    console.log("onMessageArrived:", message);
+    let div = this.div("messages");
+    div.innerHTML += message.destinationName + ": " + message.payloadString + '<br>';
+    div.scrollTop = div.scrollHeight; 
   }
   
   private connectionLost(responseObject: Paho.MQTTError) {
