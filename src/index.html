@@ -5,20 +5,54 @@
     <title>MQTT Client</title>
   </head>
   <body>    
-    <div class="input-zone">
-      <label id="lblHost" for="tbHost">Host:</label>
-      <input id="tbHost" class="input-zone-input" type="text" />
-      <label id="lblUser" for="tbUser">User:</label>
-      <input id="tbUser" class="input-zone-input" type="text" />
-      <label id="lblPassword" for="tbPassword">Password:</label>
-      <input id="tbPassword" class="input-zone-input" type="password" />
-      <button id="btnConnect">Connect</button>
+    <div class="row">
+        <div class="field grow">
+          <label id="lbl-host" for="inp-host">Host:</label>
+          <input id="inp-host" type="text" value="4ac8b8f94b8249b58a194879e510413f.s2.eu.hivemq.cloud"/>  
+        </div>
+        <div class="row">
+          <div class="field">
+            <label id="lbl-user" for="inp-user">User:</label>
+            <input id="inp-user" type="text" />  
+          </div>
+          <div class="field">
+            <label id="lbl-password" for="inp-password">Password:</label>
+            <input id="inp-password" type="password" />  
+          </div>  
+        </div>
+        <div class="field button self">
+          <button id="btn-connect" >Connect & Subscribe</button>
+        </div>
     </div>
-    <div class="input-zone">
-      <label id="lblMessage" for="tbMessage">Message:</label>
-      <input id="tbMessage" class="input-zone-input" type="text" />
-      <button id="btnSend">Send</button>
+    <div class="row">
+      <div class="field grow">
+        <label id="lbl-message" for="inp-message">Message:</label>
+        <input id="inp-message" type="text" />    
+      </div>
+      <div class="field">
+        <label id="lbl-pub" for="inp-pub">Pub topic:</label>
+        <input id="inp-pub" type="text" value="my/test/1"/>  
+      </div>
+
+      <div class="field button self">
+        <button id="btn-pub">Publish</button>
+      </div>
     </div>
-    <div id="divMessages" class="messages"></div>
+    <div class="row">
+      <div class="field grow">
+        <label id="lbl-subs" for="div-subs">Current subscriptions:</label>
+        <div id="div-subs" class="row left">        
+        </div>        
+      </div>
+      <div class="field">
+        <label id="lbl-sub" for="inp-sub">Sub topic:</label>
+        <input id="inp-sub" type="text" value="my/test/#"/>  
+      </div>
+      <div class="field button">
+        <label id="lbl-sub" for="btn-sub">Subscription</label>
+        <button id="btn-sub">Add</button>
+      </div>
+    </div>
+    <div id="div-messages" class="messages"></div>
   </body>
 </html>

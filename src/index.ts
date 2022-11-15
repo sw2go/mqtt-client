@@ -1,55 +1,190 @@
 import "./css/main.css";
 import * as Paho from "paho-mqtt"
-const tbHost: HTMLInputElement = document.querySelector("#tbHost");
-const tbUser: HTMLInputElement = document.querySelector("#tbUser");
-const tbPassword: HTMLInputElement = document.querySelector("#tbPassword");
-const btnConnect: HTMLButtonElement = document.querySelector("#btnConnect");
 
-const divMessages: HTMLDivElement = document.querySelector("#divMessages");
-const tbMessage: HTMLInputElement = document.querySelector("#tbMessage");
-const btnSend: HTMLButtonElement = document.querySelector("#btnSend");
+enum State {
+  Disconnected = 0,
+  Connecting = 1,
+  Disconnecting = 2,
+  Failure = 3,
+  ConnectionLost = 4,
+  Connected = 5
+}
 
-let client: Paho.Client = null;
 
-btnConnect.addEventListener("click", () => {
-  if (client) {
-    client.onMessageArrived = null;
-    client.onConnectionLost = null;
-    client.disconnect();
-    client = null;
+class main {
+
+  private client: Paho.Client;
+  private status: State;
+
+  constructor() {
+    this.client = null;
+    this.updateStatus(State.Disconnected);
+
+    this.btn("connect").addEventListener("click", () => {
+      if (this.status == State.Connected) {
+        this.disconnect();
+      } else if (this.status == State.Disconnected) {      
+        this.connect();
+      } else {
+        this.reset();
+      }
+    });
+
+    this.btn("pub").addEventListener("click", () => this.publish());
+    this.btn("sub").addEventListener("click", () => this.subscribe());
   }
 
-  client = new Paho.Client(tbHost.value, 8884, "clientId_" + Math.random().toString(16).substring(2,8));
-  client.onMessageArrived = messageArrived;
-  client.onConnectionLost = connectionLost;
-  client.connect({
-    useSSL: true,
-    userName: tbUser.value,
-    password: tbPassword.value,
-    onSuccess: (ctx: Paho.WithInvocationContext) => {
-      console.log("onConnect", ctx);
-      client.subscribe("my/test/#");
-    },
-    onFailure: (err: Paho.ErrorWithInvocationContext) => {
-      console.log("onFailure", err);
+  private connect() {
+    this.updateStatus(State.Connecting); 
+    this.client = new Paho.Client(this.inp("host").value, 8884, "clientId_" + Math.random().toString(16).substring(2,8));
+    this.client.onMessageDelivered = m => this.messageDelivered(m);
+    this.client.onMessageArrived = m => this.messageArrived(m);
+    this.client.onConnectionLost = e => this.connectionLost(e);
+    this.client.connect({
+      useSSL: true,
+      reconnect: true,
+      userName: this.inp("user").value,
+      password: this.inp("password").value,
+      onSuccess: (ctx: Paho.WithInvocationContext) => {
+        this.updateStatus(State.Connected);
+        this.client.subscribe(this.inp("sub").value);        
+      },
+      onFailure: (err: Paho.ErrorWithInvocationContext) => {
+        console.log("onFailure", err);
+        this.updateStatus(State.Failure);
+      }
+    });
+  }
+
+  private disconnect() {
+    this.updateStatus(State.Disconnecting);   
+    this.unsubscribeAll();
+    this.client.disconnect();   
+  }
+
+  private reset() {
+    if (this.client) {
+      if (this.client.isConnected) {
+        this.unsubscribeAll();
+        this.client.disconnect();
+      }      
+      this.client = null;      
     }
-  });
-
-});
-
-btnSend.addEventListener("click", () => {
-  let message = new Paho.Message(tbMessage.value);
-  message.destinationName = "my/test/topic";
-  client.send(message); 
-});
-
-function messageArrived (message: Paho.Message ) {
-  console.log("onMessageArrived:" + message.destinationName + " - " + message.payloadString);
-  divMessages.innerHTML += message.destinationName + " - " + message.payloadString + '<br>';
-}
-
-function connectionLost(responseObject: Paho.MQTTError) {
-  if (responseObject.errorCode !== 0) {
-    console.log("onConnectionLost:" + responseObject.errorMessage);
+    this.updateStatus(State.Disconnected);
   }
+
+  private publish() {
+    let message = new Paho.Message(this.inp("message").value);
+    message.destinationName = this.inp("pub").value;
+    this.client.send(message); 
+  }
+
+  private subscribe() {
+    let topic = this.inp("sub").value;
+    if (!this.div("subs").children.namedItem(topic)) {
+      let newDiv = this.createChip(topic);
+      this.client.subscribe(topic);
+      this.div("subs").appendChild(newDiv);      
+    }
+  }
+
+  private createChip(topic: string): HTMLDivElement {
+    let div = document.createElement('div') as HTMLDivElement;
+    div.id = topic;
+    div.classList.add("chip");
+    div.innerText = topic;
+    let newSpan = document.createElement('span') as HTMLSpanElement;
+    newSpan.classList.add("closebtn");
+    newSpan.innerHTML = "&times;";
+    div.appendChild(newSpan);
+    newSpan.addEventListener("click", () => this.unsubscribe(div));  
+    return div;
+  }
+
+
+  private unsubscribeAll() {
+    let child = this.div("subs").lastElementChild as HTMLDivElement;
+    if (child) {      
+      this.unsubscribe(child);
+      this.unsubscribeAll();
+    }
+  }
+
+  private unsubscribe(div: HTMLElement) {
+    this.client.unsubscribe(div.id);
+    div.remove();
+  }
+
+  private messageDelivered(message: Paho.Message) {
+    console.log("onMessageDelivered:", message);
+  }
+
+  private messageArrived(message: Paho.Message) {
+    console.log("onMessageArrived:", message);    
+    this.div("messages").innerHTML += message.destinationName + ": " + message.payloadString + '<br>';
+  }
+  
+  private connectionLost(responseObject: Paho.MQTTError) {
+    this.updateStatus(State.ConnectionLost);
+    if (responseObject.errorCode !== 0) {
+      console.log("onConnectionLost:" + responseObject.errorMessage);
+    }
+  }
+
+  private updateStatus(status: State) {    
+    this.inp("host").disabled = status >= State.Connected;
+    this.inp("user").disabled = status >= State.Connected;
+    this.inp("password").disabled = status >= State.Connected;
+    this.btn("connect").innerText = (State.Connected === status) ? "Disconnect" : (State.Disconnected === status) ? "Connect" : "Reset";
+
+    this.inp("message").disabled = status < State.Connected;
+    this.inp("pub").disabled = status < State.Connected;    
+    this.btn("pub").disabled = status < State.Connected;
+
+
+    this.inp("sub").disabled = status < State.Connected;
+    this.btn("sub").disabled = status < State.Connected;
+
+    if (this.status === State.Disconnecting && status === State.ConnectionLost) {
+      setTimeout(() => this.updateStatus(State.Disconnected), 0);
+    }
+    this.status = status;
+    console.log(State[status]);
+  }
+
+  private  btn(id: string): HTMLButtonElement {
+    return this.ele("btn", id) as HTMLButtonElement;
+  }
+  private inp(id: string): HTMLInputElement {
+    return this.ele("inp", id) as HTMLInputElement
+  }
+  private div(id: string): HTMLElement {
+    return this.ele("div", id)
+  }
+
+  private ele(ele: string, id: string): HTMLElement {
+    return document.getElementById(ele + "-" + id);
+  }
+
 }
+
+let x = new main();
+
+
+// Global Helpers
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

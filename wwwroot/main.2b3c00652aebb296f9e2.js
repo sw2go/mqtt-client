@@ -2473,54 +2473,157 @@ var exports = __webpack_exports__;
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 __webpack_require__(/*! ./css/main.css */ "./src/css/main.css");
 var Paho = __webpack_require__(/*! paho-mqtt */ "./node_modules/paho-mqtt/paho-mqtt.js");
-var tbHost = document.querySelector("#tbHost");
-var tbUser = document.querySelector("#tbUser");
-var tbPassword = document.querySelector("#tbPassword");
-var btnConnect = document.querySelector("#btnConnect");
-var divMessages = document.querySelector("#divMessages");
-var tbMessage = document.querySelector("#tbMessage");
-var btnSend = document.querySelector("#btnSend");
-var client = null;
-btnConnect.addEventListener("click", function () {
-    if (client) {
-        client.onMessageArrived = null;
-        client.onConnectionLost = null;
-        client.disconnect();
-        client = null;
+var State;
+(function (State) {
+    State[State["Disconnected"] = 0] = "Disconnected";
+    State[State["Connecting"] = 1] = "Connecting";
+    State[State["Disconnecting"] = 2] = "Disconnecting";
+    State[State["Failure"] = 3] = "Failure";
+    State[State["ConnectionLost"] = 4] = "ConnectionLost";
+    State[State["Connected"] = 5] = "Connected";
+})(State || (State = {}));
+var main = /** @class */ (function () {
+    function main() {
+        var _this = this;
+        this.client = null;
+        this.updateStatus(State.Disconnected);
+        this.btn("connect").addEventListener("click", function () {
+            if (_this.status == State.Connected) {
+                _this.disconnect();
+            }
+            else if (_this.status == State.Disconnected) {
+                _this.connect();
+            }
+            else {
+                _this.reset();
+            }
+        });
+        this.btn("pub").addEventListener("click", function () { return _this.publish(); });
+        this.btn("sub").addEventListener("click", function () { return _this.subscribe(); });
     }
-    client = new Paho.Client(tbHost.value, 8884, "clientId_" + Math.random().toString(16).substring(2, 8));
-    client.onMessageArrived = messageArrived;
-    client.onConnectionLost = connectionLost;
-    client.connect({
-        useSSL: true,
-        userName: tbUser.value,
-        password: tbPassword.value,
-        onSuccess: function (ctx) {
-            console.log("onConnect", ctx);
-            client.subscribe("my/test/#");
-        },
-        onFailure: function (err) {
-            console.log("onFailure", err);
+    main.prototype.connect = function () {
+        var _this = this;
+        this.updateStatus(State.Connecting);
+        this.client = new Paho.Client(this.inp("host").value, 8884, "clientId_" + Math.random().toString(16).substring(2, 8));
+        this.client.onMessageDelivered = function (m) { return _this.messageDelivered(m); };
+        this.client.onMessageArrived = function (m) { return _this.messageArrived(m); };
+        this.client.onConnectionLost = function (e) { return _this.connectionLost(e); };
+        this.client.connect({
+            useSSL: true,
+            reconnect: true,
+            userName: this.inp("user").value,
+            password: this.inp("password").value,
+            onSuccess: function (ctx) {
+                _this.updateStatus(State.Connected);
+                _this.client.subscribe(_this.inp("sub").value);
+            },
+            onFailure: function (err) {
+                console.log("onFailure", err);
+                _this.updateStatus(State.Failure);
+            }
+        });
+    };
+    main.prototype.disconnect = function () {
+        this.updateStatus(State.Disconnecting);
+        this.unsubscribeAll();
+        this.client.disconnect();
+    };
+    main.prototype.reset = function () {
+        if (this.client) {
+            if (this.client.isConnected) {
+                this.unsubscribeAll();
+                this.client.disconnect();
+            }
+            this.client = null;
         }
-    });
-});
-btnSend.addEventListener("click", function () {
-    var message = new Paho.Message(tbMessage.value);
-    message.destinationName = "my/test/topic";
-    client.send(message);
-});
-function messageArrived(message) {
-    console.log("onMessageArrived:" + message.destinationName + " - " + message.payloadString);
-    divMessages.innerHTML += message.destinationName + " - " + message.payloadString + '<br>';
-}
-function connectionLost(responseObject) {
-    if (responseObject.errorCode !== 0) {
-        console.log("onConnectionLost:" + responseObject.errorMessage);
-    }
-}
+        this.updateStatus(State.Disconnected);
+    };
+    main.prototype.publish = function () {
+        var message = new Paho.Message(this.inp("message").value);
+        message.destinationName = this.inp("pub").value;
+        this.client.send(message);
+    };
+    main.prototype.subscribe = function () {
+        var topic = this.inp("sub").value;
+        if (!this.div("subs").children.namedItem(topic)) {
+            var newDiv = this.createChip(topic);
+            this.client.subscribe(topic);
+            this.div("subs").appendChild(newDiv);
+        }
+    };
+    main.prototype.createChip = function (topic) {
+        var _this = this;
+        var div = document.createElement('div');
+        div.id = topic;
+        div.classList.add("chip");
+        div.innerText = topic;
+        var newSpan = document.createElement('span');
+        newSpan.classList.add("closebtn");
+        newSpan.innerHTML = "&times;";
+        div.appendChild(newSpan);
+        newSpan.addEventListener("click", function () { return _this.unsubscribe(div); });
+        return div;
+    };
+    main.prototype.unsubscribeAll = function () {
+        var child = this.div("subs").lastElementChild;
+        if (child) {
+            this.unsubscribe(child);
+            this.unsubscribeAll();
+        }
+    };
+    main.prototype.unsubscribe = function (div) {
+        this.client.unsubscribe(div.id);
+        div.remove();
+    };
+    main.prototype.messageDelivered = function (message) {
+        console.log("onMessageDelivered:", message);
+    };
+    main.prototype.messageArrived = function (message) {
+        console.log("onMessageArrived:", message);
+        this.div("messages").innerHTML += message.destinationName + ": " + message.payloadString + '<br>';
+    };
+    main.prototype.connectionLost = function (responseObject) {
+        this.updateStatus(State.ConnectionLost);
+        if (responseObject.errorCode !== 0) {
+            console.log("onConnectionLost:" + responseObject.errorMessage);
+        }
+    };
+    main.prototype.updateStatus = function (status) {
+        var _this = this;
+        this.inp("host").disabled = status >= State.Connected;
+        this.inp("user").disabled = status >= State.Connected;
+        this.inp("password").disabled = status >= State.Connected;
+        this.btn("connect").innerText = (State.Connected === status) ? "Disconnect" : (State.Disconnected === status) ? "Connect" : "Reset";
+        this.inp("message").disabled = status < State.Connected;
+        this.inp("pub").disabled = status < State.Connected;
+        this.btn("pub").disabled = status < State.Connected;
+        this.inp("sub").disabled = status < State.Connected;
+        this.btn("sub").disabled = status < State.Connected;
+        if (this.status === State.Disconnecting && status === State.ConnectionLost) {
+            setTimeout(function () { return _this.updateStatus(State.Disconnected); }, 0);
+        }
+        this.status = status;
+        console.log(State[status]);
+    };
+    main.prototype.btn = function (id) {
+        return this.ele("btn", id);
+    };
+    main.prototype.inp = function (id) {
+        return this.ele("inp", id);
+    };
+    main.prototype.div = function (id) {
+        return this.ele("div", id);
+    };
+    main.prototype.ele = function (ele, id) {
+        return document.getElementById(ele + "-" + id);
+    };
+    return main;
+}());
+var x = new main();
+// Global Helpers
 
 })();
 
 /******/ })()
 ;
-//# sourceMappingURL=main.fde58d025917b784e3bd.js.map
+//# sourceMappingURL=main.2b3c00652aebb296f9e2.js.map
