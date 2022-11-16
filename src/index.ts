@@ -10,7 +10,6 @@ enum State {
   Connected = 5
 }
 
-
 class main {
 
   private client: Paho.Client;
@@ -43,14 +42,16 @@ class main {
     this.client.connect({
       useSSL: true,
       reconnect: true,
+      cleanSession: true,
       userName: this.inp("user").value,
       password: this.inp("password").value,
-      onSuccess: (ctx: Paho.WithInvocationContext) => {
-        this.updateStatus(State.Connected);        
+      onSuccess: (o: Paho.WithInvocationContext) => {
+        this.updateStatus(State.Connected);
+        this.divAddHTML("console", `connect: success`);        
       },
-      onFailure: (err: Paho.ErrorWithInvocationContext) => {
-        console.log("onFailure", err);
+      onFailure: (e: Paho.ErrorWithInvocationContext) => {
         this.updateStatus(State.Failure);
+        this.divAddHTML("console", `connect: failure ${e.errorMessage}`);
       }
     });
   }
@@ -66,24 +67,34 @@ class main {
     if (this.client) {
       if (this.client.isConnected) {
         this.unsubscribeAll();
-        this.client.disconnect();
+        try {
+          this.client.disconnect();
+        } catch (e) {
+
+        }        
       }      
       this.client = null;      
     }
     this.updateStatus(State.Disconnected);
   }
 
-  private publish() {
-    let message = new Paho.Message(this.inp("message").value);
-    message.destinationName = this.inp("pub").value;
-    this.client.send(message); 
+  private publish() {  
+    this.client.send(this.inp("pub").value, this.inp("message").value, 0, true ); 
   }
 
   private subscribe() {
     let topic = this.inp("sub").value;
     if (!this.div("subs").children.namedItem(topic)) {
       let newDiv = this.createChip(topic);
-      this.client.subscribe(topic);
+      this.client.subscribe(topic, { 
+        qos: 0,
+        onSuccess: (o => {
+          this.divAddHTML("console", `subscribe: ${topic} success, grantedQos: ${o.grantedQos}`);
+        }),
+        onFailure: (e => {
+          this.divAddHTML("console", `subscribe: ${topic} failure, ${e.errorMessage}`);
+        })        
+      });
       this.div("subs").appendChild(newDiv);      
     }
   }
@@ -101,7 +112,6 @@ class main {
     return div;
   }
 
-
   private unsubscribeAll() {
     let child = this.div("subs").lastElementChild as HTMLDivElement;
     if (child) {      
@@ -111,26 +121,34 @@ class main {
   }
 
   private unsubscribe(div: HTMLElement) {
-    this.client.unsubscribe(div.id);
+    this.client.unsubscribe(div.id, {
+      onSuccess: (o => {
+        this.divAddHTML("console", `unsubscribe: ${div.id} success`);
+      }),
+      onFailure: (e => {
+        this.divAddHTML("console", `unsubscribe: ${div.id} failure, ${e.errorMessage}`);
+      }) 
+    });
     div.remove();
   }
 
   private messageDelivered(message: Paho.Message) {
-    console.log("onMessageDelivered:", message);
+    this.divAddHTML("console", `publish: success`);  
   }
 
   private messageArrived(message: Paho.Message) {
-    console.log("onMessageArrived:", message);
-    let div = this.div("messages");
-    div.innerHTML += message.destinationName + ": " + message.payloadString + '<br>';
-    div.scrollTop = div.scrollHeight; 
+    this.divAddHTML("messages", `${message.destinationName}:${message.payloadString}`);
   }
   
-  private connectionLost(responseObject: Paho.MQTTError) {
+  private connectionLost(o: Paho.MQTTError) {
     this.updateStatus(State.ConnectionLost);
-    if (responseObject.errorCode !== 0) {
-      console.log("onConnectionLost:" + responseObject.errorMessage);
-    }
+    this.divAddHTML("console", `connection: lost, ${o.errorMessage}`);
+  }
+
+  private divAddHTML(id: string, html: string) {
+    let div = this.div(id);
+    div.innerHTML += html + "<br>";
+    div.scrollTop = div.scrollHeight; 
   }
 
   private updateStatus(status: State) {    
@@ -142,7 +160,6 @@ class main {
     this.inp("message").disabled = status < State.Connected;
     this.inp("pub").disabled = status < State.Connected;    
     this.btn("pub").disabled = status < State.Connected;
-
 
     this.inp("sub").disabled = status < State.Connected;
     this.btn("sub").disabled = status < State.Connected;
