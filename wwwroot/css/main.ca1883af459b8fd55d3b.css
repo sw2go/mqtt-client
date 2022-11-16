@@ -9,16 +9,16 @@ body {
   margin: 0;
   padding: 0;
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 24px;
+  font-size: 16px;
   
 }
 
 input { 
-  font-size: 24px;
+  font-size: 16px;
 }
 
 button {
-  font-size: 24px;
+  font-size: 16px;
 }
 
 .row {
@@ -61,7 +61,7 @@ button {
   display: inline-block;
   padding: 0 15px;
   height: 30px;
-  font-size: 24px;
+  font-size: 16px;
   line-height: 30px;
   border-radius: 15px;
   background-color: #f1f1f1;
@@ -93,4 +93,4 @@ button {
   padding: 5px;
 }
 
-/*# sourceMappingURL=main.430efa8d2eac812b0780.css.map*/
+/*# sourceMappingURL=main.ca1883af459b8fd55d3b.css.map*/
