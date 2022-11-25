@@ -33,6 +33,14 @@ export class Dom {
         div.innerHTML += html + "<br>";
         div.scrollTop = div.scrollHeight; 
     }
+
+    public static now() {
+        return new Date().toLocaleTimeString('de-CH', { hour12: false, 
+            hour: "numeric", 
+            minute: "numeric",
+            second: "numeric"});
+    }
+
 }
 
 
@@ -44,7 +52,7 @@ export class Div {
 
     public Text(text: string) {
         let e = document.createElement("span");
-        e.innerText += text;
+        e.innerText += Dom.now() + " " + text;
         this.div.appendChild(e);
         e = document.createElement("br");
         this.div.appendChild(e);
