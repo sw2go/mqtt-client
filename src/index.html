@@ -5,53 +5,114 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>MQTT Client</title>
   </head>
-  <body>    
-    <div class="row">
-        <div class="field grow">
+  <body>
+    <div class="row border">
+      <div class="col-12 col-m-6">
+        <div class="field">
           <label id="lbl-host" for="inp-host">Host:</label>
           <input id="inp-host" type="text" value="4ac8b8f94b8249b58a194879e510413f.s2.eu.hivemq.cloud"/>  
         </div>
-        <div class="row">
-          <div class="field">
-            <label id="lbl-user" for="inp-user">User:</label>
-            <input id="inp-user" type="text" />  
-          </div>
-          <div class="field">
-            <label id="lbl-password" for="inp-password">Password:</label>
-            <input id="inp-password" type="password" />  
-          </div>  
+      </div>
+      <div class="col-6 col-m-3">
+        <div class="field">
+          <label id="lbl-user" for="inp-user">User:</label>
+          <input id="inp-user" type="text" />  
         </div>
-        <div class="field button self">
+      </div>
+      <div class="col-6 col-m-3">
+        <div class="field">
+          <label id="lbl-password" for="inp-password">Password:</label>
+          <input id="inp-password" type="password" />  
+        </div>
+      </div>
+      <div class="col-12 col-m-6">
+        <div class="field">
+          <label id="lbl-client-id" for="inp-client-id">Client Id:</label>
+          <input id="inp-client-id" type="text" />  
+        </div>
+      </div>
+      <div class="col-6 col-m-3">
+        <div class="field">
+          <span>              
+            <input id="inp-reconnect" type="checkbox" checked/>  
+            <label id="lbl-reconnect" for="inp-reconnect">Reconnect</label>
+          </span>
+          <span>              
+            <input id="inp-clean-session" type="checkbox" checked/>   
+            <label id="lbl-clean-session" for="inp-clean-session">Clean Session</label>
+          </span>
+        </div>
+      </div>
+      <div class="col-6 col-m-3">
+        <div class="field">
           <button id="btn-connect" >Connect & Subscribe</button>
+        </div>  
+      </div>
+    </div>
+    <div class="row border">
+        <div class="col-12">
+          <div class="field">
+            <label id="lbl-message" for="inp-message">Message:</label>
+            <input id="inp-message" type="text" />    
+          </div>
+        </div>
+        <div class="col-12 col-m-6">
+          <div class="field">
+            <label id="lbl-pub" for="inp-pub">Topic:</label>
+            <input id="inp-pub" type="text" value="my/test/1"/>  
+          </div>
+        </div>
+        <div class="col-6 col-m-3">
+          <div class="field">
+            <span>              
+              <input id="inp-retained" type="checkbox" checked/>  
+              <label id="lbl-retained" for="inp-retained">Retained</label>
+            </span>
+            <span>              
+              <select id="inp-pub-qos" style="display: inline-box;">
+                <option value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+              </select>   
+              <label id="lbl-pub-qos" for="inp-pub-qos">Qos</label>
+            </span>
+          </div>          
+        </div>
+        <div class="col-6 col-m-3">
+          <div class="field">
+            <button id="btn-pub">Publish</button>
+          </div>
         </div>
     </div>
-    <div class="row">
-      <div class="field grow">
-        <label id="lbl-message" for="inp-message">Message:</label>
-        <input id="inp-message" type="text" />    
+    <div class="row border">
+      <div class="col-12 col-m-6">
+        <div class="field">
+          <label id="lbl-sub" for="inp-sub">Topic:</label>
+          <input id="inp-sub" type="text" value="my/test/#"/>  
+        </div>
       </div>
-      <div class="field">
-        <label id="lbl-pub" for="inp-pub">Pub topic:</label>
-        <input id="inp-pub" type="text" value="my/test/1"/>  
+      <div class="col-6 col-m-3">
+        <div class="field flags">
+          <span>              
+            <select id="inp-sub-qos" style="display: inline-box;">
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+            </select>
+            <label id="lbl-sub-qos" for="inp-sub-qos">Qos</label>
+          </span>
+        </div>
       </div>
-      <div class="field button self">
-        <button id="btn-pub">Publish</button>
+      <div class="col-6 col-m-3">
+        <div class="field">
+          <button id="btn-sub">Subscribe</button>
+        </div>
       </div>
     </div>
     <div class="row">
-      <div class="field grow">
-        <label id="lbl-subs" for="div-subs">Current subscriptions:</label>
-        <div id="div-subs" class="row left">        
+        <div id="div-subs" class="chip-inline">
+          <div class="chip-inline">Current subscriptions:</div>
         </div>        
-      </div>
-      <div class="field">
-        <label id="lbl-sub" for="inp-sub">Sub topic:</label>
-        <input id="inp-sub" type="text" value="my/test/#"/>  
-      </div>
-      <div class="field button">
-        <label id="lbl-sub" for="btn-sub">Subscription</label>
-        <button id="btn-sub">Add</button>
-      </div>
     </div>
     <div id="div-messages" class="messages"></div>
     <div id="div-loggings" class="messages"></div>

@@ -38,24 +38,36 @@ class Main {
   }
 
   private connect() {
-    this.updateStatus(State.Connecting); 
-    this.client = new Paho.Client(Dom.inp("host").value, 8884, "clientId_" + Math.random().toString(16).substring(2,8));
+    this.updateStatus(State.Connecting);                 // TODO wenn nicht clean-session dann client-id als eingabe-feld
+
+    let clientId: string = Dom.inp("client-id").value;
+
+    if (!clientId || clientId.trim().length == 0) {
+      if (Dom.inp("clean-session").checked) {
+        clientId = "randomId_" + Math.random().toString(16).substring(2,8);
+      } else {
+        this.log.Text(`Client Id is mandatory when using session`);
+        return;
+      }
+    }
+
+    this.client = new Paho.Client(Dom.inp("host").value, 8884, clientId);
     this.client.onMessageDelivered = m => this.messageDelivered(m);
     this.client.onMessageArrived = m => this.messageArrived(m);
     this.client.onConnectionLost = e => this.connectionLost(e);
     this.client.connect({
       useSSL: true,
-      reconnect: true,
-      cleanSession: true,
+      reconnect: Dom.inp("reconnect").checked,
+      cleanSession: Dom.inp("clean-session").checked,
       userName: Dom.inp("user").value,
       password: Dom.inp("password").value,
       onSuccess: (o: Paho.WithInvocationContext) => {
         this.updateStatus(State.Connected);
-        this.log.Text(`connect: success`);
+        this.log.Text(`connect ${clientId}: success`);
       },
       onFailure: (e: Paho.ErrorWithInvocationContext) => {
         this.updateStatus(State.Failure);
-        this.log.Text(`connect: failure ${e.errorMessage}`);
+        this.log.Text(`connect ${clientId}: failure ${e.errorMessage}`);
       }
     });
   }
@@ -83,24 +95,26 @@ class Main {
     this.updateStatus(State.Disconnected);
   }
 
-  private publish() {  
-    this.client.send(Dom.inp("pub").value, Dom.inp("message").value, 0, true ); 
+  private publish() {      
+    let qos = parseInt(Dom.inp("pub-qos").value) as Paho.Qos;
+    this.client.send(Dom.inp("pub").value, Dom.inp("message").value, qos, Dom.inp("retained").checked); 
   }
 
   private subscribe() {
     let topic = Dom.inp("sub").value;
     if (!Dom.div("subs").children.namedItem(topic)) {
       let newDiv = this.createChip(topic);
+      let qos = parseInt(Dom.inp("sub-qos").value) as Paho.Qos;
       this.client.subscribe(topic, { 
-        qos: 0,
+        qos: qos,
         onSuccess: (o => {
+          Dom.div("subs").appendChild(newDiv);  
           this.log.Text(`subscribe: ${topic} success, grantedQos: ${o.grantedQos}`);
         }),
         onFailure: (e => {
           this.log.Text(`subscribe: ${topic} failure, ${e.errorMessage}`);
         })        
-      });
-      Dom.div("subs").appendChild(newDiv);      
+      });          
     }
   }
 
@@ -110,7 +124,7 @@ class Main {
     div.classList.add("chip");
     div.innerText = topic;
     let newSpan = document.createElement('span') as HTMLSpanElement;
-    newSpan.classList.add("closebtn");
+    newSpan.classList.add("chip-x");
     newSpan.innerHTML = "&times;";
     div.appendChild(newSpan);
     newSpan.addEventListener("click", () => this.unsubscribe(div));  
@@ -119,7 +133,7 @@ class Main {
 
   private unsubscribeAll() {
     let child = Dom.div("subs").lastElementChild as HTMLDivElement;
-    if (child) {      
+    if (child && child.classList.contains("chip")) {      
       this.unsubscribe(child);
       this.unsubscribeAll();
     }
