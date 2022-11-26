@@ -21,6 +21,10 @@ export class Dom {
         return Dom.ele("div", id) as HTMLDivElement;
     }
 
+    public static fieldset(id: string): HTMLFieldSetElement {
+        return Dom.ele("fieldset", id) as HTMLFieldSetElement;
+    }
+
     /**
      * Get HTMLElement by "{ele}-{id}"
      */

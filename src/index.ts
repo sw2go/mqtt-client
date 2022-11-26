@@ -23,15 +23,8 @@ class Main {
     this.client = null;
     this.updateStatus(State.Disconnected);
     
-    Dom.btn("connect").addEventListener("click", () => {
-      if (this.status == State.Connected) {
-        this.disconnect();
-      } else if (this.status == State.Disconnected) {      
-        this.connect();
-      } else {
-        this.reset();
-      }
-    });
+    Dom.btn("connect").addEventListener("click", () => this.connection() );
+    Dom.btn("disconnect").addEventListener("click", () => this.connection() );
 
     Dom.btn("pub").addEventListener("click", () => this.publish());
     Dom.btn("sub").addEventListener("click", () => this.subscribe());
@@ -39,6 +32,18 @@ class Main {
     Dom.btn("loggings").addEventListener("click", (e) => this.activateTab(e, "loggings"));
     Dom.btn("messages").click();
   }
+
+  private connection() {
+    if (this.status == State.Connected) {
+      this.disconnect();
+    } else if (this.status == State.Disconnected) {      
+      this.connect();
+    } else {
+      this.reset();
+    }
+  }
+
+
 
   private activateTab(e, name) {
     // Declare all variables
@@ -99,7 +104,7 @@ class Main {
 
   private disconnect() {
     this.updateStatus(State.Disconnecting);   
-    this.unsubscribeAll();
+    //this.unsubscribeAll();
     this.client.disconnect();  
     this.msg.Element.innerHTML ="";
     this.log.Element.innerHTML ="";
@@ -161,7 +166,7 @@ class Main {
     if (child && child.classList.contains("chip")) {      
       this.unsubscribe(child);
       this.unsubscribeAll();
-    }
+    }  
   }
 
   private unsubscribe(div: HTMLElement) {
@@ -189,18 +194,19 @@ class Main {
     this.log.Text(`connection: lost, ${o.errorMessage}`);
   }
 
-  private updateStatus(status: State) {    
-    Dom.inp("host").disabled = status >= State.Connected;
-    Dom.inp("user").disabled = status >= State.Connected;
-    Dom.inp("password").disabled = status >= State.Connected;
+  private updateStatus(status: State) {  
+
+    if (status >= State.Connected) {
+      Dom.div("connect").classList.add("hide");
+      Dom.div("disconnect").classList.remove("hide");
+    } else {
+      Dom.div("connect").classList.remove("hide");
+      Dom.div("disconnect").classList.add("hide");
+    }
+
+    Dom.fieldset("pub-sub").disabled = status < State.Connected;
+
     Dom.btn("connect").innerText = (State.Connected === status) ? "Disconnect" : (State.Disconnected === status) ? "Connect" : "Reset";
-
-    Dom.inp("message").disabled = status < State.Connected;
-    Dom.inp("pub").disabled = status < State.Connected;    
-    Dom.btn("pub").disabled = status < State.Connected;
-
-    Dom.inp("sub").disabled = status < State.Connected;
-    Dom.btn("sub").disabled = status < State.Connected;
 
     if (this.status === State.Disconnecting && status === State.ConnectionLost) {
       setTimeout(() => this.updateStatus(State.Disconnected), 0);

@@ -47,7 +47,16 @@ html * {
 .row {
   align-items: flex-end;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: wrap;    
+  flex-grow: 1; /* just for rows within rows*/
+}
+
+.row.hide {
+  display: none;
+}
+
+fieldset {
+  border-style: none;
 }
 
 .field {
@@ -156,4 +165,8 @@ html * {
 }
 
 
-/*# sourceMappingURL=main.af3251af265942d0cc9c.css.map*/
+
+
+
+
+/*# sourceMappingURL=main.66929955dda107ba0288.css.map*/
