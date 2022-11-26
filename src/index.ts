@@ -6,9 +6,14 @@ enum State {
   Disconnected = 0,
   Connecting = 1,
   Disconnecting = 2,
-  Failure = 3,
-  ConnectionLost = 4,
-  Connected = 5
+  ConnectFailure = 3,
+  ConnectInvalidState = 4,
+  DisconnectInvalidState = 5,
+  PublishInvalidState = 6,
+  SubscribeInvalidState = 7,
+  UnsubscribeInvalidState = 8,
+  ConnectionLost = 9,
+  Connected = 10
 }
 
 class Main {
@@ -85,27 +90,34 @@ class Main {
     this.client.onMessageDelivered = m => this.messageDelivered(m);
     this.client.onMessageArrived = m => this.messageArrived(m);
     this.client.onConnectionLost = e => this.connectionLost(e);
-    this.client.connect({
-      useSSL: true,
-      reconnect: Dom.inp("reconnect").checked,
-      cleanSession: Dom.inp("clean-session").checked,
-      userName: Dom.inp("user").value,
-      password: Dom.inp("password").value,
-      onSuccess: (o: Paho.WithInvocationContext) => {
-        this.updateStatus(State.Connected);
-        this.log.Text(`connect ${clientId}: success`);
-      },
-      onFailure: (e: Paho.ErrorWithInvocationContext) => {
-        this.updateStatus(State.Failure);
-        this.log.Text(`connect ${clientId}: failure ${e.errorMessage}`);
-      }
-    });
+
+    try {
+      this.client.connect({
+        useSSL: true,
+        reconnect: Dom.inp("reconnect").checked,
+        cleanSession: Dom.inp("clean-session").checked,
+        userName: Dom.inp("user").value,
+        password: Dom.inp("password").value,
+        onSuccess: (o: Paho.WithInvocationContext) => {
+          this.updateStatus(State.Connected, clientId);
+        },
+        onFailure: (e: Paho.ErrorWithInvocationContext) => {
+          this.updateStatus(State.ConnectFailure, `${clientId} error: ${e.errorMessage}`);
+        }
+      });
+    } catch (e) {
+      this.updateStatus(State.ConnectInvalidState, `${clientId}`);
+    }
   }
 
   private disconnect() {
     this.updateStatus(State.Disconnecting);   
-    //this.unsubscribeAll();
-    this.client.disconnect();  
+    this.unsubscribeAll();
+    try {
+      this.client.disconnect();
+    } catch (e) {
+      this.updateStatus(State.DisconnectInvalidState);
+    }    
     this.msg.Element.innerHTML ="";
     this.log.Element.innerHTML ="";
   }
@@ -117,7 +129,7 @@ class Main {
         try {
           this.client.disconnect();
         } catch (e) {
-
+          this.updateStatus(State.DisconnectInvalidState);
         }        
       }      
       this.client = null;      
@@ -127,7 +139,11 @@ class Main {
 
   private publish() {      
     let qos = parseInt(Dom.inp("pub-qos").value) as Paho.Qos;
-    this.client.send(Dom.inp("pub").value, Dom.inp("message").value, qos, Dom.inp("retained").checked); 
+    try {
+      this.client.send(Dom.inp("pub").value, Dom.inp("message").value, qos, Dom.inp("retained").checked); 
+    } catch (e) {
+      this.updateStatus(State.PublishInvalidState);
+    } 
   }
 
   private subscribe() {
@@ -135,16 +151,21 @@ class Main {
     if (!Dom.div("subs").children.namedItem(topic)) {
       let newDiv = this.createChip(topic);
       let qos = parseInt(Dom.inp("sub-qos").value) as Paho.Qos;
-      this.client.subscribe(topic, { 
-        qos: qos,
-        onSuccess: (o => {
-          Dom.div("subs").appendChild(newDiv);  
-          this.log.Text(`subscribe: ${topic} success, grantedQos: ${o.grantedQos}`);
-        }),
-        onFailure: (e => {
-          this.log.Text(`subscribe: ${topic} failure, ${e.errorMessage}`);
-        })        
-      });          
+
+      try {
+        this.client.subscribe(topic, { 
+          qos: qos,
+          onSuccess: (o => {
+            Dom.div("subs").appendChild(newDiv);  
+            this.log.Text(`subscribe: ${topic} success, grantedQos: ${o.grantedQos}`);
+          }),
+          onFailure: (e => {
+            this.log.Text(`subscribe: ${topic} failure, ${e.errorMessage}`);
+          })        
+        });  
+      }catch (e) {
+        this.updateStatus(State.SubscribeInvalidState);
+      }        
     }
   }
 
@@ -170,14 +191,18 @@ class Main {
   }
 
   private unsubscribe(div: HTMLElement) {
-    this.client.unsubscribe(div.id, {
-      onSuccess: (o => {
-        this.log.Text(`unsubscribe: ${div.id} success`);
-      }),
-      onFailure: (e => {
-        this.log.Text(`unsubscribe: ${div.id} failure, ${e.errorMessage}`);
-      }) 
-    });
+    try {
+      this.client.unsubscribe(div.id, {
+        onSuccess: (o => {
+          this.log.Text(`unsubscribe: ${div.id} success`);
+        }),
+        onFailure: (e => {
+          this.log.Text(`unsubscribe: ${div.id} failure, ${e.errorMessage}`);
+        }) 
+      });
+    } catch(e) {   
+      this.updateStatus(State.UnsubscribeInvalidState)   
+    }
     div.remove();
   }
 
@@ -190,12 +215,18 @@ class Main {
   }
   
   private connectionLost(o: Paho.MQTTError) {
-    this.updateStatus(State.ConnectionLost);
-    this.log.Text(`connection: lost, ${o.errorMessage}`);
+    this.updateStatus(State.ConnectionLost, o.errorMessage);
+    //this.log.Text(`connection: lost, ${o.errorMessage}`);
   }
 
-  private updateStatus(status: State) {  
+  private updateStatus(status: State, text: string = null) {  
 
+    if (text) {
+      this.log.Text(`${State[status]} ${text}`);
+    } else {
+      this.log.Text(`${State[status]}`);      
+    }
+    
     if (status >= State.Connected) {
       Dom.div("connect").classList.add("hide");
       Dom.div("disconnect").classList.remove("hide");
@@ -207,12 +238,12 @@ class Main {
     Dom.fieldset("pub-sub").disabled = status < State.Connected;
 
     Dom.btn("connect").innerText = (State.Connected === status) ? "Disconnect" : (State.Disconnected === status) ? "Connect" : "Reset";
+    Dom.btn("disconnect").innerText = (State.Connected === status) ? "Disconnect" : (State.Disconnected === status) ? "Connect" : "Reset";
 
     if (this.status === State.Disconnecting && status === State.ConnectionLost) {
       setTimeout(() => this.updateStatus(State.Disconnected), 0);
     }
-    this.status = status;
-    console.log(State[status]);
+    this.status = status;    
   }
 }
 
