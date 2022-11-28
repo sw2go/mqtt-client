@@ -10,7 +10,7 @@ html * {
   padding: 0;
   line-height: 1.2;
   font-family: Arial, Helvetica, sans-serif;
-  font-size: 16px;  
+  font-size: 16px;
 }
 
 /* Small Screen - Mobile first*/
@@ -44,11 +44,24 @@ html * {
   .col-m-12 {width: 100%;}
 }
 
+.cont {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.messagebox {
+  flex: 1;
+  padding-bottom: 10px;
+}
+
+
+
 .row {
   align-items: flex-end;
   display: flex;
   flex-wrap: wrap;    
-  flex-grow: 1; /* just for rows within rows*/
+  
 }
 
 .row.hide {
@@ -57,6 +70,7 @@ html * {
 
 fieldset {
   border-style: none;
+  margin-top: -10px;
 }
 
 .field {
@@ -159,6 +173,7 @@ fieldset {
   border: 1px solid #ccc;
   border-top: none;
   margin: 0px 10px 0px 10px; 
+  height: 100%;
 }
 .tabcontent span {
   font-size: 16px;
