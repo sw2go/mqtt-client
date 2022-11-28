@@ -1,3 +1,6 @@
+/*!********************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./src/css/main.css ***!
+  \********************************************************************/
 
 *,
 *::before,
@@ -47,6 +50,7 @@ html * {
 .cont {
   display: flex;
   flex-direction: column;
+  max-height: 100vh;
   height: 100vh;
 }
 
@@ -54,8 +58,6 @@ html * {
   flex: 1;
   padding-bottom: 10px;
 }
-
-
 
 .row {
   align-items: flex-end;
@@ -184,4 +186,4 @@ fieldset {
 
 
 
-/*# sourceMappingURL=main.0a84bbc1a81d4bde3a78.css.map*/
+/*# sourceMappingURL=main.27580374c11509d096c2.css.map*/
