@@ -77,7 +77,7 @@ fieldset {
 
 .field {
   flex: 1 0;
-  min-width: 100px;
+  
   display: flex;
   flex-direction: column;
   margin: 10px;
@@ -186,4 +186,4 @@ fieldset {
 
 
 
-/*# sourceMappingURL=main.27580374c11509d096c2.css.map*/
+/*# sourceMappingURL=main.0cdec680ab3026b14283.css.map*/
