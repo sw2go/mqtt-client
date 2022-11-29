@@ -1,6 +1,3 @@
-/*!********************************************************************!*\
-  !*** css ./node_modules/css-loader/dist/cjs.js!./src/css/main.css ***!
-  \********************************************************************/
 
 *,
 *::before,
@@ -47,11 +44,30 @@ html * {
   .col-m-12 {width: 100%;}
 }
 
+input {
+  margin-top: 2px;
+}
+
 .cont {
   display: flex;
   flex-direction: column;
   max-height: 100vh;
   height: 100vh;
+}
+
+.labelend {
+  flex: 1;
+  text-align: right;
+
+}
+
+.qos {
+  flex: 1;
+  text-align: right;
+}
+
+.btn {
+  width: 100px;
 }
 
 .messagebox {
@@ -96,6 +112,11 @@ fieldset {
   flex-direction: column;
   margin: 10px;
 }
+
+.field.floatright {
+  float: right;
+}
+
 
 .field.flags {
   flex-direction: row;
@@ -204,4 +225,4 @@ fieldset {
 
 
 
-/*# sourceMappingURL=main.5c678c748b33d915d9c2.css.map*/
+/*# sourceMappingURL=main.278cf97051913ab7e077.css.map*/

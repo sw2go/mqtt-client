@@ -44,11 +44,30 @@ html * {
   .col-m-12 {width: 100%;}
 }
 
+input {
+  margin-top: 2px;
+}
+
 .cont {
   display: flex;
   flex-direction: column;
   max-height: 100vh;
   height: 100vh;
+}
+
+.labelend {
+  flex: 1;
+  text-align: right;
+
+}
+
+.qos {
+  flex: 1;
+  text-align: right;
+}
+
+.btn {
+  width: 100px;
 }
 
 .messagebox {
@@ -93,6 +112,11 @@ fieldset {
   flex-direction: column;
   margin: 10px;
 }
+
+.field.floatright {
+  float: right;
+}
+
 
 .field.flags {
   flex-direction: row;
