@@ -63,59 +63,58 @@
         <div class="row border">      
           <div class="col-12">
             <div class="field">
-              <label id="lbl-message" for="inp-message">Message:</label>
+              <div class="row">
+                <span>Message: (</span>
+                <span>              
+                  <input id="inp-retained" type="checkbox" checked/>  
+                  <label id="lbl-retained" for="inp-retained">Retained)</label>
+                </span>
+              </div>              
               <input id="inp-message" type="text" />    
             </div>
           </div>
-          <div class="col-7 col-m-8">
+          <div class="col-grow">
             <div class="field">
               <label id="lbl-pub" for="inp-pub">Topic:</label>
               <input id="inp-pub" type="text" value="my/test/1"/>  
             </div>
           </div>
-          <div class="col-2 col-m-2">
-            <div class="field">
-              <span>              
-                <input id="inp-retained" type="checkbox" checked/>  
-                <label id="lbl-retained" for="inp-retained">Retained</label>
-              </span>
-              <span>              
+          <div class="col-fix">
+            <div class="field">            
                 <select id="inp-pub-qos" style="display: inline-box;">
-                  <option value="0">0</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                </select>   
-                <label id="lbl-pub-qos" for="inp-pub-qos">Qos</label>
+                  <option value="0">Q0</option>
+                  <option value="1">Q1</option>
+                  <option value="2">Q2</option>
+                </select>
               </span>
             </div>          
           </div>
-          <div class="col-3 col-m-2">
+          <div class="col-fix">
             <div class="field">
               <button id="btn-pub">Pub</button>
             </div>
           </div>
         </div>
-        <div class="row border">
-          <div class="col-6 col-m-8">
+        <div class="row nowrap border">
+          <div class="col-grow">
             <div class="field">
               <label id="lbl-sub" for="inp-sub">Topic:</label>
               <input id="inp-sub" type="text" value="my/test/#"/>  
             </div>
           </div>
-          <div class="col-3 col-m-2">
-            <div class="field flags">
+          <div class="col-fix">
+            <div class="field">
               <span>              
-                <select id="inp-sub-qos" style="display: inline-box;">
-                  <option value="0">0</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>                 
-                </select>                
-                <label id="lbl-sub-qos" for="inp-sub-qos">Qos</label>
+                <select id="inp-sub-qos" >
+                  <option value="0">Q0</option>
+                  <option value="1">Q1</option>
+                  <option value="2">Q2</option>                 
+                </select>                                
               </span>
             </div>
           </div>
-          <div class="col-3 col-m-2">
-            <div class="field">
+          <div class="col-fix">
+            <div class="field btn">
               <button id="btn-sub">Sub</button>
             </div>
           </div>

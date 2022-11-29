@@ -66,6 +66,10 @@ html * {
   
 }
 
+.row.nowrap {
+  flex-wrap: nowrap;
+}
+
 .row.hide {
   display: none;
 }
@@ -75,9 +79,19 @@ fieldset {
   margin-top: -10px;
 }
 
-.field {
-  flex: 1 0;
+.col-grow {
+  flex: 1 1;
+  display: flex;
   
+}
+
+.col-fix {
+  flex: 0 1 50px;
+  display: flex;
+}
+
+.field {
+  flex: 1 1;
   display: flex;
   flex-direction: column;
   margin: 10px;
@@ -85,6 +99,10 @@ fieldset {
 
 .field.flags {
   flex-direction: row;
+}
+
+.field.btn {
+  flex: 0 1 30px;
 }
 
 .chip {
@@ -186,4 +204,4 @@ fieldset {
 
 
 
-/*# sourceMappingURL=main.0cdec680ab3026b14283.css.map*/
+/*# sourceMappingURL=main.5c678c748b33d915d9c2.css.map*/
