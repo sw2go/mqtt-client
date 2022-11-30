@@ -66,9 +66,7 @@ input {
   text-align: right;
 }
 
-.btn {
-  width: 100px;
-}
+
 
 .messagebox {
   flex: 1;
@@ -76,14 +74,18 @@ input {
 }
 
 .row {
-  align-items: flex-end;
   display: flex;
-  flex-wrap: wrap;    
-  
+  align-items: flex-end;
+  flex-wrap: wrap;
 }
 
-.row.nowrap {
-  flex-wrap: nowrap;
+/* when shrinking we do not want to stop at the default width */
+input[type=text] {
+  width: 100%;
+}
+
+.action {
+  width: 100px;
 }
 
 .row.hide {
@@ -95,19 +97,13 @@ fieldset {
   margin-top: -10px;
 }
 
-.col-grow {
-  flex: 1 1;
-  display: flex;
-  
-}
-
-.col-fix {
-  flex: 0 1 50px;
+.flex-grow {
+  flex: 1 0;
   display: flex;
 }
 
 .field {
-  flex: 1 1;
+  flex: 1 0;
   display: flex;
   flex-direction: column;
   margin: 10px;
@@ -118,13 +114,6 @@ fieldset {
 }
 
 
-.field.flags {
-  flex-direction: row;
-}
-
-.field.btn {
-  flex: 0 1 30px;
-}
 
 .chip {
   display: inline-block;
@@ -175,8 +164,6 @@ fieldset {
   padding: 5px;
 
 }
-
-
 
 /* Style the tab */
 .tab {

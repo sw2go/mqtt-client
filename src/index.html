@@ -8,52 +8,59 @@
   <body>
     <div class="cont">
       <div class="row border">
-        <div id="div-connect" class="row">      
-          <div class="col-12 col-m-6">
-            <div class="field">
-              <label id="lbl-host" for="inp-host">Host</label>
-              <input id="inp-host" type="text" value="4ac8b8f94b8249b58a194879e510413f.s2.eu.hivemq.cloud"/>  
+        <div class="col-12">
+          <div id="div-connect" class="row">      
+            <div class="col-12 col-m-6">
+              <div class="field">
+                <label id="lbl-host" for="inp-host">Host</label>
+                <input id="inp-host" type="text" value="4ac8b8f94b8249b58a194879e510413f.s2.eu.hivemq.cloud"/>  
+              </div>
+            </div>
+            <div class="col-6 col-m-3">
+              <div class="field">
+                <label id="lbl-user" for="inp-user">User</label>
+                <input id="inp-user" type="text" />  
+              </div>
+            </div>
+            <div class="col-6 col-m-3">
+              <div class="field">
+                <label id="lbl-password" for="inp-password">Password</label>
+                <input id="inp-password" type="password" />  
+              </div>
+            </div>
+            <div class="col-12 col-m-6">
+              <div class="field">
+                <label id="lbl-client-id" for="inp-client-id">Client Id</label>
+                <input id="inp-client-id" type="text" />  
+              </div>
+            </div>
+            <div class="col-6 col-m-3">
+              <div class="field">
+                <span>              
+                  <input id="inp-reconnect" type="checkbox" checked/>  
+                  <label id="lbl-reconnect" for="inp-reconnect">Reconnect</label>
+                </span>
+                <span>              
+                  <input id="inp-clean-session" type="checkbox" checked/>   
+                  <label id="lbl-clean-session" for="inp-clean-session">Clean Session</label>
+                </span>
+              </div>
+            </div>
+            <div class="col-6 col-m-3">
+              <div class="field floatright">
+                <button id="btn-connect" class="action">Connect</button>
+              </div>  
             </div>
           </div>
-          <div class="col-6 col-m-3">
-            <div class="field">
-              <label id="lbl-user" for="inp-user">User</label>
-              <input id="inp-user" type="text" />  
+          <div id="div-disconnect" class="row hide">
+            <div class="flex-grow">
+              <div class="field"><!-- Colored-State  --></div>
             </div>
-          </div>
-          <div class="col-6 col-m-3">
-            <div class="field">
-              <label id="lbl-password" for="inp-password">Password</label>
-              <input id="inp-password" type="password" />  
+            <div>
+              <div class="field">
+                <button id="btn-disconnect" class="action">Disconnect</button>
+              </div>  
             </div>
-          </div>
-          <div class="col-12 col-m-6">
-            <div class="field">
-              <label id="lbl-client-id" for="inp-client-id">Client Id</label>
-              <input id="inp-client-id" type="text" />  
-            </div>
-          </div>
-          <div class="col-6 col-m-3">
-            <div class="field">
-              <span>              
-                <input id="inp-reconnect" type="checkbox" checked/>  
-                <label id="lbl-reconnect" for="inp-reconnect">Reconnect</label>
-              </span>
-              <span>              
-                <input id="inp-clean-session" type="checkbox" checked/>   
-                <label id="lbl-clean-session" for="inp-clean-session">Clean Session</label>
-              </span>
-            </div>
-          </div>
-          <div class="col-6 col-m-3">
-            <div class="field floatright">
-              <button class="btn" id="btn-connect">Connect</button>
-            </div>  
-          </div>
-        </div>
-        <div id="div-disconnect" class="row hide">
-          <div class="field floatright">
-            <button class="btn" id="btn-disconnect">Disconnect</button>
           </div>
         </div>
       </div>
@@ -71,7 +78,7 @@
               <input id="inp-message" type="text" />    
             </div>
           </div>
-          <div class="col-grow">
+          <div class="flex-grow">
             <div class="field">
               <div class="row">
                 <label id="lbl-pub" for="inp-pub">Topic</label>
@@ -89,14 +96,14 @@
               <input id="inp-pub" type="text" value="my/test/1"/>  
             </div>
           </div>
-          <div class="col-fix">
+          <div>
             <div class="field">
-              <button class="btn" id="btn-pub">Publish</button>
+              <button id="btn-pub" class="action">Publish</button>
             </div>
           </div>
         </div>
-        <div class="row nowrap border">
-          <div class="col-grow">
+        <div class="row border">
+          <div class="flex-grow">
             <div class="field">
               <div class="row">
                 <label class="label" id="lbl-sub" for="inp-sub">Topic</label>
@@ -114,9 +121,9 @@
               <input id="inp-sub" type="text" value="my/test/#"/>  
             </div>
           </div>
-          <div class="col-fix">
+          <div>
             <div class="field">
-              <button class="btn" id="btn-sub">Subscribe</button>
+              <button id="btn-sub" class="action">Subscribe</button>
             </div>
           </div>
         </div>
