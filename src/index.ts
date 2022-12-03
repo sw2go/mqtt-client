@@ -23,6 +23,7 @@ class Main {
 
   private msg: Div = new Div("messages");
   private log: Div = new Div("loggings");
+  private state: Div = new Div("state");
 
   constructor() {
     this.client = null;
@@ -211,6 +212,10 @@ class Main {
   }
 
   private messageArrived(message: Paho.Message) {
+
+    Dom.div("state").classList.add("incoming");
+    setTimeout(() => { Dom.div("state").classList.remove("incoming"); }, 100);
+
     this.msg.Text(`${message.destinationName}:${message.payloadString}`);
   }
   
@@ -227,7 +232,10 @@ class Main {
       this.log.Text(`${State[status]}`);      
     }
     
+    Dom.div("state").classList.remove("connected");
+
     if (status >= State.Connected) {
+      Dom.div("state").classList.add("connected");
       Dom.div("connect").classList.add("hide");
       Dom.div("disconnect").classList.remove("hide");
     } else {
