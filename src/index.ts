@@ -23,7 +23,6 @@ class Main {
 
   private msg: Div = new Div("messages");
   private log: Div = new Div("loggings");
-  private state: Div = new Div("state");
 
   constructor() {
     this.client = null;
@@ -74,7 +73,7 @@ class Main {
 
 
   private connect() {
-    this.updateStatus(State.Connecting);                 // TODO wenn nicht clean-session dann client-id als eingabe-feld
+    this.updateStatus(State.Connecting);
 
     let clientId: string = Dom.inp("client-id").value;
 
@@ -174,6 +173,8 @@ class Main {
     let div = document.createElement('div') as HTMLDivElement;
     div.id = topic;
     div.classList.add("chip");
+    div.setAttribute("session", Dom.inp("clean-session").checked ? "" : Dom.inp("client-id").value);
+    div.setAttribute("qos", Dom.inp("sub-qos").value);
     div.innerText = topic;
     let newSpan = document.createElement('span') as HTMLSpanElement;
     newSpan.classList.add("chip-x");
@@ -185,7 +186,7 @@ class Main {
 
   private unsubscribeAll() {
     let child = Dom.div("subs").lastElementChild as HTMLDivElement;
-    if (child && child.classList.contains("chip")) {      
+    if (child && child.classList.contains("chip") && child.getAttribute("session").length === 0) {      
       this.unsubscribe(child);
       this.unsubscribeAll();
     }  

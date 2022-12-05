@@ -101,6 +101,7 @@ input[type='checkbox'] {
 
 .action {
   width: 120px;
+  touch-action: manipulation; /* disable non-standard gestures such as double-tap to zoom */
 }
 
 fieldset {
@@ -222,4 +223,4 @@ fieldset {
 
 
 
-/*# sourceMappingURL=main.0be09495df489a452a7f.css.map*/
+/*# sourceMappingURL=main.c077afbe108274ed2d18.css.map*/

@@ -28,9 +28,9 @@ Setup Shelly 1 Plus
 - Connect your laptop to the Accesspoint
 - Open http://192.168.33.1
 - Setup and enable Shelly Wifi to connect to your home-WLAN
-- Check and Remember the IP the Shelly got from your WLAN i.e. 192.168.0.29
+- Check and Remember the IP the Shelly got from your DHCP i.e. 192.168.0.29
 - Disconnect your laptop from the Shelly-WLAN and connect to your LAN again
-- Open Browser and got to http://192.168.0.29 this was the IP my Shelly got in my LAN :-)
+- Open Browser and got to your Shelly i.e. http://192.168.0.29
 
 API-Details see: https://shelly-api-docs.shelly.cloud/gen2/
 
@@ -57,11 +57,30 @@ Check if Shelly is connected
 ```
 http://192.168.0.29/rpc/MQTT.GetStatus
 ```
-Subscribe to the event-topic: shellyplus1-083af201c7f4/events/rpc  -> this topic gets notified whenever something on the shelly changes "input" or "output"
-Subscribe to a src/rpc-topic: user_1/rpc
 
-Publish to Topic: shellyplus1-083af201c7f4/rpc
-Message-Payload1: { "method":"Switch.Set", "params":{"id":0, "on":false} } -> Switches relais 0 OFF, subscribers of the event-topic get notified
-Message-Payload2: { "id":123, "src":"user_1", "method":"Switch.Set", "params":{"id":0, "on":true} } -> Switches relais 0 ON, both subscribers (event-topic and the src/rpc-topic) get notified
-Message-Payload3: { "method":"Switch.Toggle", "params":{"id":0} } -> Toggles the relais, subscribers of the event-topic get notified
+Subscribe to the event-topic if you want to get notified whenever something on the shelly changes "input" or "output"
+```
+shellyplus1-083af201c7f4/events/rpc
+```
+Subscribe to a src/rpc-topic: 
+```
+user_1/rpc
+```
 
+Publish to Topic: 
+```
+shellyplus1-083af201c7f4/rpc
+```
+
+This publish message switches the relais 0 OFF, subscribers of the event-topic get notified
+``` json
+{ "method":"Switch.Set", "params": { "id":0, "on":false } }
+```
+This publish message switches the relais 0 ON, both subscribers (event-topic and the src/rpc-topic) get notified
+``` json
+{ "id":123, "src":"user_1", "method":"Switch.Set", "params":{ "id":0, "on":true } }
+``` 
+This publish message toggles the relais, subscribers of the event-topic get notified
+``` json
+{ "method":"Switch.Toggle", "params": { "id":0 } } 
+```
