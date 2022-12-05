@@ -81,7 +81,7 @@ class Main {
       if (Dom.inp("clean-session").checked) {
         clientId = "randomId_" + Math.random().toString(16).substring(2,8);
       } else {
-        this.log.Text(`Client Id is mandatory when using session`);
+        alert(`Client Id is mandatory when using session`);
         return;
       }
     }
@@ -147,11 +147,13 @@ class Main {
   }
 
   private subscribe() {
+    let clientId = Dom.inp("client-id").value;
     let topic = Dom.inp("sub").value;
-    if (!Dom.div("subs").children.namedItem(topic)) {
-      let newDiv = this.createChip(topic);
-      let qos = parseInt(Dom.inp("sub-qos").value) as Paho.Qos;
+    let qos = parseInt(Dom.inp("sub-qos").value) as Paho.Qos;
 
+    // create chip only if it does not jet exist for the current session 
+    if (!Dom.div("subs").querySelector(`[topic="${topic}"][client-id="${clientId}"]`)) {
+      let newDiv = this.createChip(topic);      
       try {
         this.client.subscribe(topic, { 
           qos: qos,
@@ -170,36 +172,45 @@ class Main {
   }
 
   private createChip(topic: string): HTMLDivElement {
-    let div = document.createElement('div') as HTMLDivElement;
-    div.id = topic;
-    div.classList.add("chip");
-    div.setAttribute("session", Dom.inp("clean-session").checked ? "" : Dom.inp("client-id").value);
-    div.setAttribute("qos", Dom.inp("sub-qos").value);
-    div.innerText = topic;
+    let chip = document.createElement('div') as HTMLDivElement;
+    chip.classList.add("chip");
+    chip.setAttribute("clean-session", Dom.inp("clean-session").checked ? "1" : "0");
+    chip.setAttribute("client-id", Dom.inp("client-id").value);
+    chip.setAttribute("topic", topic);
+    chip.setAttribute("qos", Dom.inp("sub-qos").value);
+    chip.innerText = topic;
     let newSpan = document.createElement('span') as HTMLSpanElement;
     newSpan.classList.add("chip-x");
     newSpan.innerHTML = "&times;";
-    div.appendChild(newSpan);
-    newSpan.addEventListener("click", () => this.unsubscribe(div));  
-    return div;
+    chip.appendChild(newSpan);
+    newSpan.addEventListener("click", () => { 
+      if (chip.getAttribute("clean-session") === "1" || chip.getAttribute("client-id") === Dom.inp("client-id").value) {
+        this.unsubscribe(chip);
+      } else {
+        alert("to unsubscribe use correct client-id: " + chip.getAttribute("client-id"));
+      }
+    });  
+    return chip;
   }
 
   private unsubscribeAll() {
-    let child = Dom.div("subs").lastElementChild as HTMLDivElement;
-    if (child && child.classList.contains("chip") && child.getAttribute("session").length === 0) {      
-      this.unsubscribe(child);
+    let chip = Dom.div("subs").lastElementChild as HTMLDivElement;
+    // unsubscribe all only when connection was a clean-session 
+    if (chip && chip.classList.contains("chip") && chip.getAttribute("clean-session") === "1") {      
+      this.unsubscribe(chip);
       this.unsubscribeAll();
     }  
   }
 
   private unsubscribe(div: HTMLElement) {
+    let topic = div.getAttribute("topic");
     try {
-      this.client.unsubscribe(div.id, {
+      this.client.unsubscribe(topic, {
         onSuccess: (o => {
-          this.log.Text(`unsubscribe: ${div.id} success`);
+          this.log.Text(`unsubscribe: ${topic} success`);
         }),
         onFailure: (e => {
-          this.log.Text(`unsubscribe: ${div.id} failure, ${e.errorMessage}`);
+          this.log.Text(`unsubscribe: ${topic} failure, ${e.errorMessage}`);
         }) 
       });
     } catch(e) {   
@@ -222,7 +233,6 @@ class Main {
   
   private connectionLost(o: Paho.MQTTError) {
     this.updateStatus(State.ConnectionLost, o.errorMessage);
-    //this.log.Text(`connection: lost, ${o.errorMessage}`);
   }
 
   private updateStatus(status: State, text: string = null) {  
