@@ -85,7 +85,11 @@ This publish message toggles the relais, subscribers of the event-topic get noti
 { "method":"Switch.Toggle", "params": { "id":0 } } 
 ```
 
-Insights for Qos > 0
-- Set same Qos value on the publishers and the subscribers side
-- Use a sessioned connection (clean session = false) with a constant client-id on the subscribers side. The client-id is used to lookup the session on the server.
-- After a client reconnect all subscriptions are reestablished automatically and the queued messages are delivered.
+Use a clean session connection
+- When the client has publishers only (any Qos)
+- When the client has no subscriptions with Qos > 0 and the client resources are sufficient to handle the resubscriptions after every reconnection
+
+Use a persistent connection (clean session = false)
+- When the client has subscribtions with Qos > 0
+- When the client has few resources and the broker should remember the subscriptions for the client, in order to be able to restore them independently after a reconnection
+
