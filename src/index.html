@@ -28,6 +28,41 @@
                 <input id="inp-password" type="password" />  
               </div>
             </div>
+            <div class="accordion">
+              <button id="btn-lastwill">Last will</button>
+              <div  class="row hide col-12">
+                <div class="col-12 col-m-6">
+                  <div class="field">
+                    <div class="row">
+                      <label>Message</label>
+                      <div class="labelend">                  
+                        <label id="lbl-lw-retained" for="inp-lw-retained">Retained</label>
+                        <input id="inp-lw-retained" type="checkbox" checked/>  
+                      </div>
+                    </div>              
+                    <input id="inp-lw-message" type="text" />    
+                  </div>
+                </div>
+                <div class="col-12 col-m-6">
+                  <div class="field">
+                    <div class="row">
+                      <label id="lbl-lw-topic" for="inp-lw-topic">Topic</label>
+                      <div class="labelend">
+                        <span> 
+                          <span>QoS</span>             
+                          <select id="inp-lw-qos" >
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>                 
+                          </select>                                
+                        </span>
+                      </div>              
+                    </div>              
+                    <input id="inp-lw-topic" type="text" value="my/test/1"/>  
+                  </div>
+                </div>
+              </div>
+            </div>
             <div class="col-12 col-m-6">
               <div class="field">
                 <label id="lbl-client-id" for="inp-client-id">Client Id</label>
@@ -37,12 +72,12 @@
             <div class="col-6 col-m-3">
               <div class="field">
                 <span>              
-                  <input id="inp-reconnect" type="checkbox" checked/>  
-                  <label id="lbl-reconnect" for="inp-reconnect">Reconnect</label>
-                </span>
-                <span>              
                   <input id="inp-clean-session" type="checkbox" checked/>   
                   <label id="lbl-clean-session" for="inp-clean-session">Clean Session</label>
+                </span>
+                <span>              
+                  <input id="inp-reconnect" type="checkbox" checked/> 
+                  <label id="lbl-reconnect" for="inp-reconnect">Reconnect</label>
                 </span>
               </div>
             </div>
@@ -71,17 +106,17 @@
               <div class="row">
                 <label>Message</label>
                 <div class="labelend">                  
-                  <label id="lbl-retained" for="inp-retained">Retained</label>
-                  <input id="inp-retained" type="checkbox" checked/>  
+                  <label id="lbl-pub-retained" for="inp-pub-retained">Retained</label>
+                  <input id="inp-pub-retained" type="checkbox" checked/>  
                 </div>
               </div>              
-              <input id="inp-message" type="text" />    
+              <input id="inp-pub-message" type="text" />    
             </div>
           </div>
           <div class="flex-grow">
             <div class="field">
               <div class="row">
-                <label id="lbl-pub" for="inp-pub">Topic</label>
+                <label id="lbl-pub-topic" for="inp-pub-topic">Topic</label>
                 <div class="labelend">
                   <span> 
                     <span>QoS</span>             
@@ -93,7 +128,7 @@
                   </span>
                 </div>              
               </div>              
-              <input id="inp-pub" type="text" value="my/test/1"/>  
+              <input id="inp-pub-topic" type="text" value="my/test/1"/>  
             </div>
           </div>
           <div>
@@ -106,7 +141,7 @@
           <div class="flex-grow">
             <div class="field">
               <div class="row">
-                <label class="label" id="lbl-sub" for="inp-sub">Topic</label>
+                <label class="label" id="lbl-sub-topic" for="inp-sub-topic">Topic</label>
                 <div class="labelend">
                   <span> 
                     <span>QoS</span>             
@@ -118,7 +153,7 @@
                   </span>
                 </div>              
               </div>              
-              <input id="inp-sub" type="text" value="my/test/#"/>  
+              <input id="inp-sub-topic" type="text" value="my/test/#"/>  
             </div>
           </div>
           <div>
@@ -136,10 +171,14 @@
       <div class="tab">
         <button id="btn-messages" class="tablinks">Messages</button>
         <button id="btn-loggings" class="tablinks">Console</button>
+        <button id="btn-clear" class="clear">&times;</button>
       </div>
       <div class="messagebox">
+
+        
         <div id="div-messages" class="tabcontent"></div>
         <div id="div-loggings" class="tabcontent"></div>  
+        
       </div>
     </div>
   </body>
