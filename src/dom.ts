@@ -59,6 +59,7 @@ export class Div {
         this.div.appendChild(e);
         e = document.createElement("br");
         this.div.appendChild(e);
+        this.div.scrollTop = this.div.scrollHeight;
         return this;
     }
 

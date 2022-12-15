@@ -60,7 +60,6 @@ input[type='checkbox'] {
 .content {
   display: flex;
   flex-direction: column;
-  max-height: 100vh;
   height: 100vh;
 }
 
@@ -85,7 +84,9 @@ input[type='checkbox'] {
 
 .messagebox {
   flex: 1;
-  padding-bottom: 10px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;  
 }
 
 .clear {
@@ -216,24 +217,27 @@ fieldset {
 /* Style the tab content */
 .tabcontent {
   display: none;
-  padding: 6px 12px;
+
+  flex: 1 1 0px;      /* make it fill the parent but */
+  overflow-y: auto;   /* but show scroller when content takes to much space */
+
   border: 1px solid #ccc;
   border-top: none;
-  margin: 0px 10px 0px 10px; 
-  height: 100%;
+
+  margin: 10px;
+  margin-top: 0px;
 }
+
 .tabcontent span {
   font-size: 16px;
 }
 
 .clear {
-
   font-size: 24px;
   float: right;
   border: none;
   cursor: pointer;
   margin: 9px;
-  
 }
 
 
