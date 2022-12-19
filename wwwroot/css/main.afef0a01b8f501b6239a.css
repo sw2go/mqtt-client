@@ -60,7 +60,7 @@ input[type='checkbox'] {
 .content {
   display: flex;
   flex-direction: column;
-  height: calc(100vh + 1px);
+  height: 100vh;
 }
 
 .labelend {
@@ -330,4 +330,4 @@ fieldset {
 
 
 
-/*# sourceMappingURL=main.83538034f68d6cff56a0.css.map*/
+/*# sourceMappingURL=main.afef0a01b8f501b6239a.css.map*/
