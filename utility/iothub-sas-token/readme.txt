@@ -14,4 +14,6 @@ Generate Connection-Credentials
 dotnet run <deviceId> <primaryKey>
 ```
 
+To be able to debug dotnet add C# extension to VS-Code add a build task .vscode/tasks.json and extend .vscode/launch.json with a launch-setting for dotnet
+
 
