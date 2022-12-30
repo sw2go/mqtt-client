@@ -93,3 +93,29 @@ Use a persistent connection (clean session = false)
 - When the client has subscribtions with Qos > 0
 - When the client has few resources and the broker should remember the subscriptions for the client, in order to be able to restore them independently after a reconnection
 
+
+Sample-URL for different Hosts
+------------------------------
+
+hivemq (free)
+wss://4ac8b8f94b8249b58a194879e510413f.s2.eu.hivemq.cloud:8884/mqtt
+username and password
+
+flespi (free)
+wss://mqtt.flespi.io:443/mqtt
+username=token, no password
+
+emqx 
+wss://d868d105.eu-central-1.emqx.cloud:8084/mqtt
+username and password
+
+iothub (free) but not really mqtt, i.e. client can't subscribe to topics from other devices
+wss://aac-iot-hub.azure-devices.net:443/$iothub/websocket?iothub-no-client-cert=true
+credentials see: dotnet utility iothub-sas-token
+Send message to twin in IoTHub:
+publish property: $iothub/twin/PATCH/properties/reported/?$rid=123 (any number) message: { "myprop": "hello-value" }
+Receive message from twin:
+subscribe to topic: $iothub/twin/PATCH/properties/desired/#
+
+
+

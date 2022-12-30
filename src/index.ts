@@ -76,12 +76,17 @@ class Main {
       }
     }
 
-    this.client = new Paho.Client(this.ui.Host, 8884, clientId);
+    if (this.ui.Host.startsWith("wss://")) {
+      this.client = new Paho.Client(this.ui.Host, clientId);
+    } else {
+      alert("invalid host url: wss:// protocol is mandatory")
+    }
+
     this.client.onMessageDelivered = m => this.messageDelivered(m);
     this.client.onMessageArrived = m => this.messageArrived(m);
     this.client.onConnectionLost = e => this.connectionLost(e);
 
-    let options: Paho.ConnectionOptions = {
+    let options: Paho.ConnectionOptions = {      
       useSSL: true,
       reconnect: this.ui.Reconnect,
       cleanSession: this.ui.CleanSession,
