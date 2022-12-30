@@ -1,11 +1,10 @@
 # mqtt-client
-- Sample MQTT client for browser, written in Typescript
+- Sample MQTT client for browser, written in Typescript (this repo)
 - Using paho-mqtt from npmjs.com
-- Connect to a MQTT-Broker via WebSocket over an encrypted TLS connection
-- Try session, retained messages, quality of service level 0 to 2
-- Publish and subscribe to topics, to send and receive messages
-- Try the client: https://sw2go.github.io/mqtt-client/
-- Tested with "HiveMQ Cloud Broker" https://www.hivemq.com/mqtt-cloud-broker/<br>
+- Connecting to MQTT-Broker via WebSocket over an encrypted TLS connection
+- You can try the client here: https://sw2go.github.io/mqtt-client/
+- Publish and subscribe to topics with sessions, retained messages and quality of service levels 0 to 2
+- Initially tested with "HiveMQ Cloud Broker" https://www.hivemq.com/mqtt-cloud-broker/<br>
   and a "Shelly Plus 1" Wifi-Relais https://shelly-api-docs.shelly.cloud/gen2 
 
 Setup project
@@ -22,8 +21,8 @@ Setup MQTT broker
 - https://www.hivemq.com/downloads/<br>
   I went with the free cloud version
   
-
-Setup Shelly 1 Plus
+# Shelly 1 Plus
+Setup the device
 - Power on your Shelly, it runs an Accesspoint named "ShellyPlus1_....."
 - Connect your laptop to the Accesspoint
 - Open http://192.168.33.1
@@ -41,7 +40,7 @@ http://192.168.0.29/rpc/Switch.Set?id=0&on=true
 http://192.168.0.29/rpc/Switch.Toggle?id=0
 ```
 
-Setup MQTT
+Setup MQTT protocol on the device
 
 Read MQTT configuration
 ```
@@ -84,7 +83,7 @@ This publish message toggles the relais, subscribers of the event-topic get noti
 ``` json
 { "method":"Switch.Toggle", "params": { "id":0 } } 
 ```
-
+# MQTT tips
 Use a clean session connection
 - When the client has publishers only (any Qos)
 - When the client has no subscriptions with Qos > 0 and the client resources are sufficient to handle the resubscriptions after every reconnection
@@ -94,28 +93,43 @@ Use a persistent connection (clean session = false)
 - When the client has few resources and the broker should remember the subscriptions for the client, in order to be able to restore them independently after a reconnection
 
 
-Sample-URL for different Hosts
-------------------------------
+# MQTT brokers
+Just a list of my broker instances I tested with
+### HiveMQ Cloud https://www.hivemq.com/mqtt-cloud-broker/ (free)
+No ACL with free plan 
+```
+host url: wss://4ac8b8f94b8249b58a194879e510413f.s2.eu.hivemq.cloud:8884/mqtt
+username: you create username online
+Password: you create password online
+```
 
-hivemq (free)
-wss://4ac8b8f94b8249b58a194879e510413f.s2.eu.hivemq.cloud:8884/mqtt
-username and password
+### flespi https://flespi.io/ (free)
+Including some ACL (access control)
+```
+host url: wss://mqtt.flespi.io:443/mqtt
+username: you create token online
+password: none
+```
 
-flespi (free)
-wss://mqtt.flespi.io:443/mqtt
-username=token, no password
+### IoTHub https://portal.azure.com/ (free) but not really mqtt
+i.e. client can only subscribe to own twin 'desired' and publish to own twin 'reported', see also: https://github.com/ridomin/iothub-webclient/blob/master/AzIoTHubClient.js
+```
+host url: wss://aac-iot-hub.azure-devices.net:443/$iothub/websocket?iothub-no-client-cert=true
+clientId: you create device online
+username: aac-iot-hub.azure-devices.net/<device>/?api-version=2021-04-12
+password: you create SasToken with device privateKey see dot.net utility
+pubtopic: $iothub/twin/PATCH/properties/reported/?$rid=xyz (xyz = number) message: { "myprop": "hello-value" }
+subtopic: $iothub/twin/PATCH/properties/desired/#
+```
 
-emqx 
-wss://d868d105.eu-central-1.emqx.cloud:8084/mqtt
-username and password
+### EMQX Cloud https://www.emqx.io (14 days trial)
+Full ACL support
+```
+host url: wss://d868d105.eu-central-1.emqx.cloud:8084/mqtt
+username: you create username online
+password: you create password online
+```
 
-iothub (free) but not really mqtt, i.e. client can't subscribe to topics from other devices
-wss://aac-iot-hub.azure-devices.net:443/$iothub/websocket?iothub-no-client-cert=true
-credentials see: dotnet utility iothub-sas-token
-Send message to twin in IoTHub:
-publish property: $iothub/twin/PATCH/properties/reported/?$rid=123 (any number) message: { "myprop": "hello-value" }
-Receive message from twin:
-subscribe to topic: $iothub/twin/PATCH/properties/desired/#
-
-
+### Beebotte, MyQttHub 
+As of Dec 2022 both are not supporting wss:// jet
 
