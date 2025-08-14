@@ -26,8 +26,8 @@ Setup the device
 - Power on your Shelly, it runs an Accesspoint named "ShellyPlus1_....."
 - Connect your laptop to the Accesspoint
 - Open http://192.168.33.1
-- Setup and enable Shelly Wifi to connect to your home-WLAN
-- Check and Remember the IP the Shelly got from your DHCP i.e. 192.168.0.29
+- Setup and enable Shelly Wifi to connect to your home-WLAN, make sure to set DNS i.e. 8.8.8.8
+- Check and Remember the IP you set or the Shelly got from your DHCP i.e. 192.168.0.29
 - Disconnect your laptop from the Shelly-WLAN and connect to your LAN again
 - Open Browser and got to your Shelly i.e. http://192.168.0.29
 
