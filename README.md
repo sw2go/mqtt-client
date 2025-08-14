@@ -24,12 +24,16 @@ Setup MQTT broker
 # Shelly 1 Plus
 Setup the device
 - Power on your Shelly, it runs an Accesspoint named "ShellyPlus1_....."
-- Connect your laptop to the Accesspoint
+- If it does not, do a factory reset by powering on the Shelly and immediately press the Shelly button 5 times within 5 seconds
+- Connect your mobile or laptop to the Accesspoint
 - Open http://192.168.33.1
 - Setup and enable Shelly Wifi to connect to your home-WLAN, make sure to set DNS i.e. 8.8.8.8
 - Check and Remember the IP you set or the Shelly got from your DHCP i.e. 192.168.0.29
 - Disconnect your laptop from the Shelly-WLAN and connect to your LAN again
 - Open Browser and got to your Shelly i.e. http://192.168.0.29
+- In Networks disable Accesspoint, Cloud and Bluetooth
+- In Device enable Authentication (to protect Shelly's http endpoint with a password)
+
 
 API-Details see: https://shelly-api-docs.shelly.cloud/gen2/
 
@@ -49,7 +53,7 @@ http://192.168.0.29/rpc/MQTT.GetConfig
 
 Set MQTT configuration
 ```
-http://192.168.0.29/rpc/MQTT.SetConfig?config={ "enable": true, "server": "4ac8b8f94b8249b58a194879e510413f.s2.eu.hivemq.cloud:8883", "user": "???", "pass": "???" , "ssl_ca": "*" }
+http://192.168.0.29/rpc/MQTT.SetConfig?config={ "enable": true, "server": "4ac8b8f94b8249b58a194879e510413f.s2.eu.hivemq.cloud:8883", "user": "???", "pass": "???" , "ssl_ca": "*", "rpc_ntf":true,"status_ntf":true }
 ```
 
 Check if Shelly is connected
