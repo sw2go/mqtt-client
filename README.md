@@ -37,12 +37,24 @@ Setup the device
 
 API-Details see: https://shelly-api-docs.shelly.cloud/gen2/
 
-Read, write or toggle relais 0 using HTTP in your Browser
+Read, write or toggle relais 0 using HTTP in your Browser (if user and pwd is required, user=admin)
 ```
 http://192.168.0.29/rpc/Switch.GetStatus?id=0
 http://192.168.0.29/rpc/Switch.Set?id=0&on=true
 http://192.168.0.29/rpc/Switch.Toggle?id=0
 ```
+
+Check Switch configuration
+
+http://192.168.0.29/rpc/Switch.GetConfig?id=0
+
+Set Switch configuration from follow (default) to detached
+
+to test ...
+http://192.168.0.29/rpc/Switch.SetConfig?config={"id":0,"in_mode":"detached"}
+
+
+
 
 Setup MQTT protocol on the device
 
