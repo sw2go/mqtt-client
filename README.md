@@ -28,9 +28,9 @@ Setup the device
 - Connect your mobile or laptop to the Accesspoint
 - Open http://192.168.33.1
 - Setup and enable Shelly Wifi to connect to your home-WLAN, make sure to set DNS i.e. 8.8.8.8
-- Check and Remember the IP you set or the Shelly got from your DHCP i.e. 192.168.0.29
+- Check and Remember the IP you set or the Shelly got from your DHCP i.e. 192.168.0.200
 - Disconnect your laptop from the Shelly-WLAN and connect to your LAN again
-- Open Browser and got to your Shelly i.e. http://192.168.0.29
+- Open Browser and got to your Shelly i.e. http://192.168.0.200
 - In Networks disable Accesspoint, Cloud and Bluetooth
 - In Device enable Authentication (to protect Shelly's http endpoint with a password)
 
@@ -39,19 +39,27 @@ API-Details see: https://shelly-api-docs.shelly.cloud/gen2/
 
 Read, write or toggle relais 0 using HTTP in your Browser (if user and pwd is required, user=admin)
 ```
-http://192.168.0.29/rpc/Switch.GetStatus?id=0
-http://192.168.0.29/rpc/Switch.Set?id=0&on=true
-http://192.168.0.29/rpc/Switch.Toggle?id=0
+http://192.168.0.200/rpc/Switch.GetStatus?id=0
+http://192.168.0.200/rpc/Switch.Set?id=0&on=true
+http://192.168.0.200/rpc/Switch.Toggle?id=0
 ```
 
 Check Switch configuration
 
-http://192.168.0.29/rpc/Switch.GetConfig?id=0
+http://192.168.0.200/rpc/Switch.GetConfig?id=0
+
+or with curl on linux:
+curl --digest -u "admin:password" "http://192.168.0.200/rpc/Switch.GetConfig?id=0"
+
 
 Set Switch configuration from follow (default) to detached
 
+curl --digest -u 'admin:password' -X POST http://192.168.0.200/rpc/Switch.SetConfig -H "Content-Type: application/json" -d '{"id":0,"config":{"in_mode":"detached","initial_state":"off"}}'
+
+
+
 to test ...
-http://192.168.0.29/rpc/Switch.SetConfig?config={"id":0,"in_mode":"detached"}
+http://192.168.0.200/rpc/Switch.SetConfig?config={"id":0,"in_mode":"detached"}
 
 
 
@@ -60,17 +68,17 @@ Setup MQTT protocol on the device
 
 Read MQTT configuration
 ```
-http://192.168.0.29/rpc/MQTT.GetConfig
+http://192.168.0.200/rpc/MQTT.GetConfig
 ```
 
 Set MQTT configuration
 ```
-http://192.168.0.29/rpc/MQTT.SetConfig?config={ "enable": true, "server": "4ac8b8f94b8249b58a194879e510413f.s2.eu.hivemq.cloud:8883", "user": "???", "pass": "???" , "ssl_ca": "*", "rpc_ntf":true,"status_ntf":true }
+http://192.168.0.200/rpc/MQTT.SetConfig?config={ "enable": true, "server": "4ac8b8f94b8249b58a194879e510413f.s2.eu.hivemq.cloud:8883", "user": "???", "pass": "???" , "ssl_ca": "*", "rpc_ntf":true,"status_ntf":true }
 ```
 
 Check if Shelly is connected
 ```
-http://192.168.0.29/rpc/MQTT.GetStatus
+http://192.168.0.200/rpc/MQTT.GetStatus
 ```
 
 Subscribe to the event-topic if you want to get notified whenever something on the shelly changes "input" or "output"
